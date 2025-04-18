@@ -59,10 +59,10 @@
                 },
                 columns: [
                     {
-                        data: "DT_RowIndex", // Menampilkan nomor urut
+                        data: "id",
                         className: "text-center",
-                        orderable: false,
-                        searchable: false
+                        orderable: true,
+                        searchable: true
                     },
                     {
                         data: "name", // Kolom nama jenis

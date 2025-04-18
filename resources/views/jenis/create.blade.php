@@ -3,7 +3,7 @@
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Tambah Data Jenis</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Tambah Data Jenis Kendaraan</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -11,12 +11,14 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label>Nama Jenis</label>
-                    <input type="text" name="name" id="name" class="form-control" required>
+                    <input type="text" name="name" id="name" class="form-control"
+                        placeholder="Masukkan Nama Jenis Kendaraan" required>
                     <small id="error-name" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
                     <label>Tipe Jenis</label>
-                    <input type="text" name="type" id="type" class="form-control" required>
+                    <input type="text" name="type" id="type" class="form-control"
+                        placeholder="Masukkan Tipe Jenis Kendaraan" required>
                     <small id="error-type" class="error-text form-text text-danger"></small>
                 </div>
             </div>

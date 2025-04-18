@@ -11,12 +11,12 @@ class JenisController extends Controller
     public function index()
     {
         $breadcrumb = (object) [
-            'title' => 'Daftar Jenis',
+            'title' => 'Daftar Jenis Kendaraan',
             'list' => ['Home', 'Jenis']
         ];
 
         $page = (object) [
-            'title' => 'Daftar jenis yang tersedia dalam sistem'
+            'title' => 'Daftar jenis Kendaraan yang tersedia dalam sistem'
         ];
 
         $activeMenu = 'jenis';
