@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Mobil;
@@ -18,7 +17,7 @@ class MobilController extends Controller
         ];
 
         $page = (object) [
-            'title' => 'Daftar mobil yang tersedia dalam sistem'
+            'title' => 'Daftar Mobil yang tersedia dalam sistem'
         ];
 
         $activeMenu = 'mobil';
@@ -28,31 +27,30 @@ class MobilController extends Controller
 
     public function list(Request $request)
     {
-        $mobil = Mobil::with('jenis')->select('id', 'name', 'brand', 'year', 'quantity', 'jenis_id');
+        $mobil = Mobil::select('id', 'name', 'brand', 'year', 'quantity', 'jenis_id');
 
         return DataTables::of($mobil)
             ->addIndexColumn()
             ->addColumn('jenis', function ($mobil) {
-                return $mobil->jenis->name ?? '-';
+                return $mobil->jenis->name; // Menampilkan nama jenis kendaraan berdasarkan relasi
             })
             ->addColumn('aksi', function ($mobil) {
-                $btn = '<button onclick="modalAction(\'' . url('/mobil/' . $mobil->id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/mobil/' . $mobil->id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/mobil/' . $mobil->id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
-
+                $btn = '<button onclick="modalAction(\'' . url('/mobil/' . $mobil->id . '/show') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/mobil/' . $mobil->id . '/edit') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/mobil/' . $mobil->id . '/delete') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
             })
             ->rawColumns(['aksi'])
-            ->make(true);
+            ->make(true); // Response dalam format JSON
     }
 
-    public function create_ajax()
+    public function create()
     {
-        $jenis = Jenis::all(); // Mengambil data jenis untuk dropdown
-        return view('mobil.create_ajax', compact('jenis'));
+        $jenis = Jenis::all(); // Ambil semua data jenis kendaraan
+        return view('mobil.create', compact('jenis')); // Menampilkan form tambah mobil
     }
 
-    public function store_ajax(Request $request)
+    public function store(Request $request)
     {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
@@ -60,7 +58,7 @@ class MobilController extends Controller
                 'brand' => 'required|string|min:3',
                 'year' => 'required|integer',
                 'quantity' => 'required|integer',
-                'jenis_id' => 'required|exists:jenis,id' // Validasi untuk memastikan 'jenis_id' ada di tabel 'jenis'
+                'jenis_id' => 'required|exists:jenis,id' // Validasi untuk foreign key jenis_id
             ];
             $validator = Validator::make($request->all(), $rules);
 
@@ -74,14 +72,23 @@ class MobilController extends Controller
         return redirect('/');
     }
 
-    public function edit_ajax(string $id)
+    public function show(string $id)
     {
         $mobil = Mobil::find($id);
-        $jenis = Jenis::all(); // Mengambil data jenis untuk dropdown
-        return view('mobil.edit_ajax', compact('mobil', 'jenis'));
+        $page = (object) [
+            'title' => 'Detail Mobil'
+        ];
+        return view('mobil.show', compact('mobil', 'page'));
     }
 
-    public function update_ajax(Request $request, $id)
+    public function edit(string $id)
+    {
+        $mobil = Mobil::find($id);
+        $jenis = Jenis::all(); // Ambil semua data jenis kendaraan
+        return view('mobil.edit', compact('mobil', 'jenis')); // Menampilkan form edit mobil
+    }
+
+    public function update(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
@@ -89,7 +96,7 @@ class MobilController extends Controller
                 'brand' => 'required|string|min:3',
                 'year' => 'required|integer',
                 'quantity' => 'required|integer',
-                'jenis_id' => 'required|exists:jenis,id' // Validasi untuk memastikan 'jenis_id' ada di tabel 'jenis'
+                'jenis_id' => 'required|exists:jenis,id' // Validasi untuk foreign key jenis_id
             ];
             $validator = Validator::make($request->all(), $rules);
 
@@ -108,22 +115,47 @@ class MobilController extends Controller
         return redirect('/');
     }
 
-    public function confirm_ajax(string $id)
+    public function confirm(string $id)
     {
+        // Cek apakah ID valid
+        if (!is_numeric($id)) {
+            return redirect('/mobil')->with('error', 'ID tidak valid');
+        }
+
+        // Ambil data mobil berdasarkan ID
         $mobil = Mobil::find($id);
-        return view('mobil.confirm_ajax', ['mobil' => $mobil]);
+
+        if (!$mobil) {
+            // Jika data mobil tidak ditemukan, redirect ke halaman lain atau tampilkan pesan kesalahan
+            return redirect('/mobil')->with('error', 'Mobil tidak ditemukan');
+        }
+
+        // Mengembalikan view dengan data mobil untuk konfirmasi penghapusan
+        return view('mobil.confirm', ['mobil' => $mobil]);
     }
 
-    public function delete_ajax(Request $request, $id)
+    public function delete(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
-            $mobil = Mobil::find($id);
-            if ($mobil) {
-                $mobil->delete();
-                return response()->json(['status' => true, 'message' => 'Data berhasil dihapus']);
+            $mobil = Mobil::find($id); // Cari data Mobil berdasarkan ID
+
+            if (!$mobil) {
+                return response()->json(['status' => false, 'message' => 'Mobil tidak ditemukan']); // Jika data Mobil tidak ditemukan
             }
-            return response()->json(['status' => false, 'message' => 'Data tidak ditemukan']);
+
+            try {
+                // Hapus data mobil
+                $mobil->delete();
+
+                return response()->json(['status' => true, 'message' => 'Data berhasil dihapus']); // Jika berhasil dihapus
+            } catch (\Exception $e) {
+                // Menangkap kesalahan yang terjadi selama proses penghapusan
+                return response()->json(['status' => false, 'message' => 'Gagal menghapus data: ' . $e->getMessage()]);
+            }
         }
-        return redirect('/');
+
+        // Jika bukan request AJAX, redirect ke halaman lain
+        return redirect('/mobil');
     }
+
 }
