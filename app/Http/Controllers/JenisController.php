@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Jenis;
@@ -32,9 +31,9 @@ class JenisController extends Controller
         return DataTables::of($jenis)
             ->addIndexColumn()
             ->addColumn('aksi', function ($jenis) {
-                $btn = '<button onclick="modalAction(\'' . url('/jenis/' . $jenis->id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/jenis/' . $jenis->id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/jenis/' . $jenis->id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
+                $btn = '<button onclick="modalAction(\'' . url('/jenis/' . $jenis->id . '/show') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/jenis/' . $jenis->id . '/edit') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/jenis/' . $jenis->id . '/delete') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
 
                 return $btn;
             })
@@ -42,12 +41,12 @@ class JenisController extends Controller
             ->make(true);
     }
 
-    public function create_ajax()
+    public function create()
     {
-        return view('jenis.create_ajax');
+        return view('jenis.create'); // Menampilkan form tambah jenis
     }
 
-    public function store_ajax(Request $request)
+    public function store(Request $request)
     {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
@@ -66,13 +65,13 @@ class JenisController extends Controller
         return redirect('/');
     }
 
-    public function edit_ajax(string $id)
+    public function edit(string $id)
     {
         $jenis = Jenis::find($id);
-        return view('jenis.edit_ajax', ['jenis' => $jenis]);
+        return view('jenis.edit', ['jenis' => $jenis]); // Menampilkan form edit jenis
     }
 
-    public function update_ajax(Request $request, $id)
+    public function update(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
@@ -96,13 +95,13 @@ class JenisController extends Controller
         return redirect('/');
     }
 
-    public function confirm_ajax(string $id)
+    public function confirm(string $id)
     {
         $jenis = Jenis::find($id);
-        return view('jenis.confirm_ajax', ['jenis' => $jenis]);
+        return view('jenis.confirm', ['jenis' => $jenis]); // Menampilkan konfirmasi hapus
     }
 
-    public function delete_ajax(Request $request, $id)
+    public function delete(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
             $jenis = Jenis::find($id);
