@@ -43,53 +43,41 @@
 
 @push('js')
     <script>
-        // Fungsi untuk memanggil modal
         function modalAction(url = '') {
             $('#myModal').load(url, function () {
                 $('#myModal').modal('show');
             });
         }
-
         var dataJenis;
         $(document).ready(function () {
-            // Inisialisasi DataTable dengan server-side processing
             dataJenis = $('#table_jenis').DataTable({
                 serverSide: true,
                 ajax: {
-                    url: "{{ url('jenis/list') }}", // Pastikan ini adalah URL yang tepat
-                    type: "POST",
+                    url: "{{ url('jenis/list') }}",
                     dataType: "json",
-                    // Jika diperlukan, kirimkan parameter tambahan melalui 'data'
-                    data: function (d) {
-                        return $.extend({}, d, {
-                            // Kirim parameter tambahan jika diperlukan
-                        });
-                    },
-                    error: function (xhr, error, thrown) {
-                        console.log('Error loading data from server: ' + error);
-                    }
+                    type: "POST"
                 },
                 columns: [
                     {
-                        data: "DT_RowIndex",  // Menampilkan indeks baris
+                        data: "DT_RowIndex", // Menampilkan nomor urut
                         className: "text-center",
                         orderable: false,
                         searchable: false
                     },
                     {
-                        data: "name",  // Nama Jenis
+                        data: "name", // Kolom nama jenis
                         className: "",
                         orderable: true,
                         searchable: true
                     },
                     {
-                        data: "type",  // Tipe Jenis
+                        data: "type", // Kolom tipe jenis
                         className: "",
                         orderable: true,
                         searchable: true
                     },
                     {
-                        data: "aksi",  // Aksi untuk Edit atau Hapus
+                        data: "aksi", // Kolom aksi
                         className: "",
                         orderable: false,
                         searchable: false

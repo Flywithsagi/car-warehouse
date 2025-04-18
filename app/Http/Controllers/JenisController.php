@@ -34,11 +34,10 @@ class JenisController extends Controller
                 $btn = '<button onclick="modalAction(\'' . url('/jenis/' . $jenis->id . '/show') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/jenis/' . $jenis->id . '/edit') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/jenis/' . $jenis->id . '/delete') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
-
                 return $btn;
             })
             ->rawColumns(['aksi'])
-            ->make(true);
+            ->make(true); // Response dalam format JSON
     }
 
     public function create()
@@ -63,6 +62,15 @@ class JenisController extends Controller
             return response()->json(['status' => true, 'message' => 'Data jenis berhasil disimpan']);
         }
         return redirect('/');
+    }
+
+    public function show(string $id)
+    {
+        $jenis = Jenis::find($id);
+        $page = (object) [
+            'title' => 'Detail Jenis'
+        ];
+        return view('jenis.show', compact('jenis', 'page'));
     }
 
     public function edit(string $id)
@@ -97,20 +105,48 @@ class JenisController extends Controller
 
     public function confirm(string $id)
     {
+        // Cek apakah ID valid
+        if (!is_numeric($id)) {
+            return redirect('/jenis')->with('error', 'ID tidak valid');
+        }
+
+        // Ambil data jenis berdasarkan ID
         $jenis = Jenis::find($id);
-        return view('jenis.confirm', ['jenis' => $jenis]); // Menampilkan konfirmasi hapus
+
+        if (!$jenis) {
+            // Jika data jenis tidak ditemukan, redirect ke halaman lain atau tampilkan pesan kesalahan
+            return redirect('/jenis')->with('error', 'Jenis tidak ditemukan');
+        }
+
+        // Mengembalikan view dengan data jenis untuk konfirmasi penghapusan
+        return view('jenis.confirm', ['jenis' => $jenis]);
     }
 
     public function delete(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
-            $jenis = Jenis::find($id);
-            if ($jenis) {
-                $jenis->delete();
-                return response()->json(['status' => true, 'message' => 'Data berhasil dihapus']);
+            $jenis = Jenis::find($id); // Cari data Jenis berdasarkan ID
+
+            if (!$jenis) {
+                return response()->json(['status' => false, 'message' => 'Jenis tidak ditemukan']); // Jika data Jenis tidak ditemukan
             }
-            return response()->json(['status' => false, 'message' => 'Data tidak ditemukan']);
+
+            try {
+                // Hapus mobil yang berelasi dengan jenis
+                $jenis->mobil()->delete(); // Menghapus semua mobil yang memiliki jenis_id yang sama
+
+                // Hapus data jenis
+                $jenis->delete();
+
+                return response()->json(['status' => true, 'message' => 'Data berhasil dihapus']); // Jika berhasil dihapus
+            } catch (\Exception $e) {
+                // Menangkap kesalahan yang terjadi selama proses penghapusan
+                return response()->json(['status' => false, 'message' => 'Gagal menghapus data: ' . $e->getMessage()]);
+            }
         }
-        return redirect('/');
+
+        // Jika bukan request AJAX, redirect ke halaman lain
+        return redirect('/jenis');
     }
+
 }

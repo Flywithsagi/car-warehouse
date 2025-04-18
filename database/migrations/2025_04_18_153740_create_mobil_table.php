@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('mobil', function (Blueprint $table) {
-            $table->id(); // Kolom id (primary key)
+            $table->id(); // Kolom id sebagai primary key
             $table->string('name'); // Nama mobil
             $table->string('brand'); // Merk mobil
             $table->integer('year'); // Tahun mobil

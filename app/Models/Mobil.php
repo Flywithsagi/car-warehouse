@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Mobil extends Model
 {
     use HasFactory;
-
+    protected $table = 'mobil';
     // Kolom yang bisa diisi secara mass-assignment
     protected $fillable = [
         'name',
@@ -18,11 +18,9 @@ class Mobil extends Model
         'jenis_id',
     ];
 
-    /**
-     * Relasi ke model Jenis
-     */
+    // Relasi dengan model Jenis
     public function jenis()
     {
-        return $this->belongsTo(Jenis::class);
+        return $this->belongsTo(Jenis::class, 'jenis_id', 'id');
     }
 }

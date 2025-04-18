@@ -1,19 +1,34 @@
-@extends('layouts.template')
-
-@section('content')
-    <div class="card card-outline card-primary">
-        <div class="card-header">
-            <h3 class="card-title">{{ $page->title }}</h3>
-            <div class="card-tools"></div>
-        </div>
-        <div class="card-body">
-            @if(empty($jenis))
+@if(empty($jenis))
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Kesalahan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
                 <div class="alert alert-danger alert-dismissible">
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!</h5>
                     Data yang Anda cari tidak ditemukan.
                 </div>
-            @else
-                <table class="table table-bordered table-striped table-hover table-sm">
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-default">Tutup</button>
+            </div>
+        </div>
+    </div>
+@else
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detail Data Jenis</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-striped table-sm">
                     <tr>
                         <th>Nama Jenis</th>
                         <td>{{ $jenis->name }}</td>
@@ -23,14 +38,10 @@
                         <td>{{ $jenis->type }}</td>
                     </tr>
                 </table>
-            @endif
-            <a href="{{ url('jenis') }}" class="btn btn-sm btn-default mt-2">Kembali</a>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-default">Tutup</button>
+            </div>
         </div>
     </div>
-@endsection
-
-@push('css')
-@endpush
-
-@push('js')
-@endpush
+@endif
