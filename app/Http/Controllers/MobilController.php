@@ -84,10 +84,14 @@ class MobilController extends Controller
     public function show(string $id)
     {
         $mobil = Mobil::find($id);
-        $page = (object) [
-            'title' => 'Detail Mobil'
-        ];
-        return view('mobil.show', compact('mobil', 'page'));
+        $jenis = Jenis::find($mobil->jenis_id); // Mengambil data jenis berdasarkan jenis_id di tabel mobil
+
+        if (empty($jenis)) {
+            // Jika jenis tidak ditemukan, kirim pesan kesalahan melalui with()
+            return view('mobil.show', compact('mobil'))->with('error', 'Data jenis tidak ditemukan');
+        }
+
+        return view('mobil.show', compact('mobil', 'jenis'));
     }
 
     public function edit(string $id)
