@@ -43,6 +43,25 @@
 @endsection
 
 @push('css')
+    <style>
+        /* Bikin filter dan search sejajar */
+        #table_mobil_wrapper .dataTables_filter {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        #table_mobil_wrapper .dataTables_filter label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0;
+        }
+
+        #search_jenis {
+            min-width: 160px;
+        }
+    </style>
 @endpush
 
 @push('js')
@@ -52,66 +71,45 @@
                 $('#myModal').modal('show');
             });
         }
-        var dataMobil;
-        $(document).ready(function () {
-            dataMobil = $('#table_mobil').DataTable({
-                serverSide: true,
-                ajax: {
-                    url: "{{ url('mobil/list') }}",
-                    dataType: "json",
-                    type: "POST"
-                },
-                columns: [
-                    {
-                        data: "id",
-                        className: "text-center",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: "kode_mobil",
-                        className: "",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: "name", // Kolom nama mobil
-                        className: "",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: "brand", // Kolom merk mobil
-                        className: "",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: "year", // Kolom tahun mobil
-                        className: "",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: "quantity", // Kolom jumlah mobil
-                        className: "",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: "jenis", // Kolom jenis kendaraan
-                        className: "",
-                        orderable: true,
-                        searchable: true
-                    },
-                    {
-                        data: "aksi", // Kolom aksi
-                        className: "text-center",
-                        orderable: false,
-                        searchable: false
-                    }
-                ]
-            });
+
+        let dataMobil = $('#table_mobil').DataTable({
+            dom: '<"row mb-2"<"col-sm-12 col-md-6"f><"col-sm-12 col-md-6 text-right"l>>rt<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+            serverSide: true,
+            ajax: {
+                url: "{{ url('mobil/list') }}",
+                type: "POST",
+                data: function (d) {
+                    d.search_jenis = $('#search_jenis').val();
+                }
+            },
+            columns: [
+                { data: "id", className: "text-center" },
+                { data: "kode_mobil" },
+                { data: "name" },
+                { data: "brand" },
+                { data: "year" },
+                { data: "quantity" },
+                { data: "jenis" },
+                { data: "aksi", className: "text-center", orderable: false, searchable: false }
+            ],
+            initComplete: function () {
+                $('#table_mobil_filter').prepend(`
+                                    <label>Jenis:
+                                        <select id="search_jenis" class="form-control form-control-sm">
+                                            <option value="">Semua Jenis</option>
+                                            @foreach($jenis as $j)
+                                                <option value="{{ $j->name }}">{{ $j->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </label>
+                                `);
+
+                $('#search_jenis').on('change', function () {
+                    dataMobil.draw();
+                });
+                // Menambahkan placeholder pada input pencarian
+                $('#table_mobil_filter input').attr('placeholder', 'Cari Mobil...');
+            }
         });
     </script>
 @endpush

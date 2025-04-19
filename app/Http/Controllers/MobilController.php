@@ -12,6 +12,8 @@ class MobilController extends Controller
 {
     public function index()
     {
+        // Ambil semua data jenis untuk filter
+        $jenis = Jenis::all();
         $breadcrumb = (object) [
             'title' => 'Daftar Mobil',
             'list' => ['Home', 'Mobil']
@@ -23,17 +25,26 @@ class MobilController extends Controller
 
         $activeMenu = 'mobil';
 
-        return view('mobil.index', compact('breadcrumb', 'page', 'activeMenu'));
+        return view('mobil.index', compact('breadcrumb', 'page', 'activeMenu', 'jenis'));
     }
+
 
     public function list(Request $request)
     {
+        // Ambil data mobil beserta relasi 'jenis'
         $mobil = Mobil::with('jenis')->select('id', 'kode_mobil', 'name', 'brand', 'year', 'quantity', 'jenis_id');
+
+        // Jika ada pencarian berdasarkan jenis, filter data
+        if ($request->has('search_jenis') && $request->search_jenis != '') {
+            $mobil = $mobil->whereHas('jenis', function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->search_jenis . '%');
+            });
+        }
 
         return DataTables::of($mobil)
             ->addIndexColumn()
             ->addColumn('jenis', function ($mobil) {
-                return $mobil->jenis->name ?? '-';
+                return $mobil->jenis->name ?? '-'; // Menampilkan nama jenis kendaraan
             })
             ->addColumn('aksi', function ($mobil) {
                 $btn = '<button onclick="modalAction(\'' . url('/mobil/' . $mobil->id . '/show') . '\')" class="btn btn-info btn-sm">Detail</button> ';
@@ -42,8 +53,9 @@ class MobilController extends Controller
                 return $btn;
             })
             ->rawColumns(['aksi'])
-            ->make(true); // Response dalam format JSON
+            ->make(true);
     }
+
 
     public function create()
     {
