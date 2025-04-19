@@ -1,4 +1,4 @@
-@if(empty($jenis))
+@if(empty($mobil))
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -9,40 +9,61 @@
             </div>
             <div class="modal-body">
                 <div class="alert alert-danger">
-                    <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
-                    Data yang Anda cari tidak ditemukan
+                    <h5><i class="icon fas fa-ban"></i> Kesalahan!</h5>
+                    Data yang Anda cari tidak ditemukan.
                 </div>
-                <a href="{{ url('/jenis') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
 @else
-    <form action="{{ url('/jenis/' . $jenis->id . '/update') }}" method="POST" id="form-edit">
+    <form action="{{ url('/mobil/' . $mobil->id . '/update') }}" method="POST" id="form-edit">
         @csrf
         @method('PUT')
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Edit Data Jenis</h5>
+                    <h5 class="modal-title">Edit Data Mobil</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>Nama Jenis</label>
-                        <input type="text" name="name" id="name" class="form-control" value="{{ $jenis->name }}" required>
-                        <small id="error-name" class="error-text form-text text-danger"></small>
+                        <label>Nama Mobil</label>
+                        <input type="text" name="name" class="form-control" value="{{ $mobil->name }}" required>
+                        <small class="text-danger error-text" id="error-name"></small>
                     </div>
                     <div class="form-group">
-                        <label>Tipe Jenis</label>
-                        <input type="text" name="type" id="type" class="form-control" value="{{ $jenis->type }}" required>
-                        <small id="error-type" class="error-text form-text text-danger"></small>
+                        <label>Merk Mobil</label>
+                        <input type="text" name="brand" class="form-control" value="{{ $mobil->brand }}" required>
+                        <small class="text-danger error-text" id="error-brand"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Tahun</label>
+                        <input type="number" name="year" class="form-control" value="{{ $mobil->year }}" required>
+                        <small class="text-danger error-text" id="error-year"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Jumlah</label>
+                        <input type="number" name="quantity" class="form-control" value="{{ $mobil->quantity }}" required>
+                        <small class="text-danger error-text" id="error-quantity"></small>
+                    </div>
+                    <div class="form-group">
+                        <label>Jenis Mobil</label>
+                        <select name="jenis_id" class="form-control" required>
+                            <option value="">-- Pilih Jenis --</option>
+                            @foreach($listJenis as $item)
+                                <option value="{{ $item->id }}" {{ $mobil->jenis_id == $item->id ? 'selected' : '' }}>
+                                    {{ $item->name }} - {{ $item->type }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <small class="text-danger error-text" id="error-jenis_id"></small>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                 </div>
             </div>
         </div>
@@ -50,51 +71,27 @@
 
     <script>
         $(document).ready(function () {
-            $("#form-edit").validate({
-                rules: {
-                    name: { required: true, maxlength: 100 },
-                    type: { required: true, maxlength: 50 }
-                },
-                submitHandler: function (form) {
-                    $.ajax({
-                        url: form.action,
-                        type: form.method,
-                        data: $(form).serialize(),
-                        success: function (response) {
-                            if (response.status) {
-                                $('#myModal').modal('hide');
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil',
-                                    text: response.message
-                                });
-                                dataJenis.ajax.reload();
-                            } else {
-                                $('.error-text').text('');
-                                $.each(response.msgField, function (prefix, val) {
-                                    $('#error-' + prefix).text(val[0]);
-                                });
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Terjadi Kesalahan',
-                                    text: response.message
-                                });
-                            }
+            $('#form-edit').on('submit', function (e) {
+                e.preventDefault();
+                var form = $(this);
+                $.ajax({
+                    url: form.attr('action'),
+                    type: 'POST',
+                    data: form.serialize(),
+                    success: function (res) {
+                        $('.error-text').text('');
+                        if (res.status) {
+                            $('#myModal').modal('hide');
+                            Swal.fire('Berhasil', res.message, 'success');
+                            dataMobil.ajax.reload(); // reload datatable
+                        } else {
+                            $.each(res.msgField, function (key, val) {
+                                $('#error-' + key).text(val[0]);
+                            });
+                            Swal.fire('Gagal', res.message, 'error');
                         }
-                    });
-                    return false;
-                },
-                errorElement: 'span',
-                errorPlacement: function (error, element) {
-                    error.addClass('invalid-feedback');
-                    element.closest('.form-group').append(error);
-                },
-                highlight: function (element) {
-                    $(element).addClass('is-invalid');
-                },
-                unhighlight: function (element) {
-                    $(element).removeClass('is-invalid');
-                }
+                    }
+                });
             });
         });
     </script>

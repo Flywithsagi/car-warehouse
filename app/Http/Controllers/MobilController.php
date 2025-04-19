@@ -94,11 +94,13 @@ class MobilController extends Controller
         return view('mobil.show', compact('mobil', 'jenis'));
     }
 
+    // Controller: MobilController.php
+
     public function edit(string $id)
     {
         $mobil = Mobil::find($id);
-        $jenis = Jenis::all(); // Ambil semua data jenis kendaraan
-        return view('mobil.edit', compact('mobil', 'jenis')); // Menampilkan form edit mobil
+        $listJenis = Jenis::all(); // Ambil semua jenis untuk dropdown
+        return view('mobil.edit', compact('mobil', 'listJenis'));
     }
 
     public function update(Request $request, $id)
@@ -109,22 +111,29 @@ class MobilController extends Controller
                 'brand' => 'required|string|min:3',
                 'year' => 'required|integer',
                 'quantity' => 'required|integer',
-                'jenis_id' => 'required|exists:jenis,id' // Validasi untuk foreign key jenis_id
+                'jenis_id' => 'required|exists:jenis,id',
             ];
+
             $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
-                return response()->json(['status' => false, 'message' => 'Validasi gagal.', 'msgField' => $validator->errors()]);
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi gagal.',
+                    'msgField' => $validator->errors()
+                ]);
             }
 
             $mobil = Mobil::find($id);
-            if ($mobil) {
-                $mobil->update($request->all());
-                return response()->json(['status' => true, 'message' => 'Data berhasil diupdate']);
+            if (!$mobil) {
+                return response()->json(['status' => false, 'message' => 'Data mobil tidak ditemukan']);
             }
 
-            return response()->json(['status' => false, 'message' => 'Data tidak ditemukan']);
+            $mobil->update($request->all());
+
+            return response()->json(['status' => true, 'message' => 'Data mobil berhasil diperbarui']);
         }
+
         return redirect('/');
     }
 
