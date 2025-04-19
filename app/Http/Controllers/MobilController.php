@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Mobil;
@@ -66,7 +67,15 @@ class MobilController extends Controller
                 return response()->json(['status' => false, 'message' => 'Validasi Gagal', 'msgField' => $validator->errors()]);
             }
 
-            Mobil::create($request->all());
+            // Menambahkan logika untuk auto-generate kode_mobil
+            $lastMobil = Mobil::orderBy('id', 'desc')->first();
+            $newCode = 'MB' . str_pad(($lastMobil ? (intval(substr($lastMobil->kode_mobil, 2)) + 1) : 1), 4, '0', STR_PAD_LEFT);
+
+            // Tambahkan kode_mobil ke request sebelum disimpan
+            $data = $request->all();
+            $data['kode_mobil'] = $newCode;
+
+            Mobil::create($data);
             return response()->json(['status' => true, 'message' => 'Data mobil berhasil disimpan']);
         }
         return redirect('/');
@@ -157,5 +166,4 @@ class MobilController extends Controller
         // Jika bukan request AJAX, redirect ke halaman lain
         return redirect('/mobil');
     }
-
 }

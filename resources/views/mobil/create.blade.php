@@ -64,7 +64,7 @@
                     maxlength: 100
                 },
                 year: {
-                    required: true
+                    required: true,
                     min: 1900
                 },
                 quantity: {
@@ -88,6 +88,12 @@
                                 title: 'Berhasil',
                                 text: response.message
                             });
+
+                            // Redirect ke halaman daftar mobil setelah berhasil menyimpan
+                            if (response.redirect) {
+                                window.location.href = response.redirect; // Redirect ke URL daftar mobil
+                            }
+
                             dataMobil.ajax.reload(); // reload DataTable agar data terbaru tampil
                         } else {
                             $('.error-text').text('');  // reset error text
