@@ -27,12 +27,12 @@ class MobilController extends Controller
 
     public function list(Request $request)
     {
-        $mobil = Mobil::select('id', 'name', 'brand', 'year', 'quantity', 'jenis_id');
+        $mobil = Mobil::with('jenis')->select('id', 'kode_mobil', 'name', 'brand', 'year', 'quantity', 'jenis_id');
 
         return DataTables::of($mobil)
             ->addIndexColumn()
             ->addColumn('jenis', function ($mobil) {
-                return $mobil->jenis->name; // Menampilkan nama jenis kendaraan berdasarkan relasi
+                return $mobil->jenis->name ?? '-';
             })
             ->addColumn('aksi', function ($mobil) {
                 $btn = '<button onclick="modalAction(\'' . url('/mobil/' . $mobil->id . '/show') . '\')" class="btn btn-info btn-sm">Detail</button> ';

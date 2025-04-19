@@ -11,6 +11,7 @@ class Mobil extends Model
     protected $table = 'mobil';
     // Kolom yang bisa diisi secara mass-assignment
     protected $fillable = [
+        'kode_mobil',
         'name',
         'brand',
         'year',
@@ -21,6 +22,6 @@ class Mobil extends Model
     // Relasi dengan model Jenis
     public function jenis()
     {
-        return $this->belongsTo(Jenis::class, 'jenis_id', 'id');
+        return $this->belongsTo(Jenis::class);
     }
 }

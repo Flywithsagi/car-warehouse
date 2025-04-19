@@ -24,6 +24,7 @@
                 <thead>
                     <tr>
                         <th>ID</th>
+                        <th>Kode Mobil</th>
                         <th>Nama Mobil</th>
                         <th>Merk Mobil</th>
                         <th>Tahun Mobil</th>
@@ -68,6 +69,12 @@
                         searchable: true
                     },
                     {
+                        data: "kode_mobil",
+                        className: "",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
                         data: "name", // Kolom nama mobil
                         className: "",
                         orderable: true,
@@ -92,7 +99,7 @@
                         searchable: true
                     },
                     {
-                        data: "jenis_id", // Kolom jenis kendaraan
+                        data: "jenis", // Kolom jenis kendaraan
                         className: "",
                         orderable: true,
                         searchable: true
