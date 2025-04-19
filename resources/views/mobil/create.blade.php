@@ -24,24 +24,23 @@
                 <div class="form-group">
                     <label>Tahun Mobil</label>
                     <input type="number" name="year" id="year" class="form-control" placeholder="Masukkan Tahun Mobil"
-                        required>
+                        required min="1900">
                     <small id="error-year" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
                     <label>Jumlah Mobil</label>
                     <input type="number" name="quantity" id="quantity" class="form-control"
-                        placeholder="Masukkan Jumlah Mobil" required>
+                        placeholder="Masukkan Jumlah Mobil" required min="1">
                     <small id="error-quantity" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label>Jenis Kendaraan</label>
+                    <label>Jenis Mobil</label>
                     <select name="jenis_id" id="jenis_id" class="form-control" required>
-                        <option value="">Pilih Jenis Kendaraan</option>
-                        @foreach($jenisList as $jenis)
-                            <option value="{{ $jenis->id }}">{{ $jenis->name }}</option>
+                        @foreach ($jenis as $item)
+                            <option value="{{ $item->id }}">{{ $item->name }}</option>
                         @endforeach
                     </select>
-                    <small id="error-jenis_id" class="error-text form-text text-danger"></small>
+                    <small id="error-jenis" class="error-text form-text text-danger"></small>
                 </div>
             </div>
             <div class="modal-footer">
@@ -65,14 +64,11 @@
                     maxlength: 100
                 },
                 year: {
-                    required: true,
-                    digits: true,
-                    minlength: 4,
-                    maxlength: 4
+                    required: true
+                    min: 1900
                 },
                 quantity: {
                     required: true,
-                    digits: true,
                     min: 1
                 },
                 jenis_id: {
