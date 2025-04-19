@@ -57,29 +57,54 @@ class MobilController extends Controller
             $rules = [
                 'name' => 'required|string|min:3',
                 'brand' => 'required|string|min:3',
-                'year' => 'required|integer',
-                'quantity' => 'required|integer',
-                'jenis_id' => 'required|exists:jenis,id' // Validasi untuk foreign key jenis_id
+                'year' => 'required|integer|min:1900',
+                'quantity' => 'required|integer|min:1',
+                'jenis_id' => 'required|exists:jenis,id'
             ];
+
             $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
-                return response()->json(['status' => false, 'message' => 'Validasi Gagal', 'msgField' => $validator->errors()]);
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors()
+                ]);
             }
 
-            // Menambahkan logika untuk auto-generate kode_mobil
+            // Ambil ID terakhir, lalu +1 sebagai ID baru
+            $lastId = Mobil::max('id') ?? 0;
+            $newId = $lastId + 1;
+
+            // Generate kode_mobil otomatis
             $lastMobil = Mobil::orderBy('id', 'desc')->first();
-            $newCode = 'MB' . str_pad(($lastMobil ? (intval(substr($lastMobil->kode_mobil, 2)) + 1) : 1), 4, '0', STR_PAD_LEFT);
+            $newCode = 'MB' . str_pad(
+                ($lastMobil ? (intval(substr($lastMobil->kode_mobil, 2)) + 1) : 1),
+                4,
+                '0',
+                STR_PAD_LEFT
+            );
 
-            // Tambahkan kode_mobil ke request sebelum disimpan
-            $data = $request->all();
-            $data['kode_mobil'] = $newCode;
+            // Buat data baru
+            $mobil = new Mobil();
+            $mobil->id = $newId; // Custom ID (non-auto-increment)
+            $mobil->kode_mobil = $newCode;
+            $mobil->name = $request->name;
+            $mobil->brand = $request->brand;
+            $mobil->year = $request->year;
+            $mobil->quantity = $request->quantity;
+            $mobil->jenis_id = $request->jenis_id;
+            $mobil->save();
 
-            Mobil::create($data);
-            return response()->json(['status' => true, 'message' => 'Data mobil berhasil disimpan']);
+            return response()->json([
+                'status' => true,
+                'message' => 'Data mobil berhasil disimpan'
+            ]);
         }
+
         return redirect('/');
     }
+
 
     public function show(string $id)
     {

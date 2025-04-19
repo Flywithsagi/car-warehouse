@@ -9,8 +9,9 @@ class Jenis extends Model
 {
     use HasFactory;
     protected $fillable = [
+        'id',
         'name',
-        'type',
+        'type'
     ];
     // Relasi dengan model Mobil
     public function mobil()

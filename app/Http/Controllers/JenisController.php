@@ -52,17 +52,31 @@ class JenisController extends Controller
                 'name' => 'required|string|min:3',
                 'type' => 'required|string|min:3'
             ];
+
             $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
                 return response()->json(['status' => false, 'message' => 'Validasi Gagal', 'msgField' => $validator->errors()]);
             }
 
-            Jenis::create($request->all());
+            // Ambil ID terakhir
+            $lastJenis = Jenis::orderBy('id', 'desc')->first();
+            // Auto-generate ID untuk jenis baru
+            $newId = $lastJenis ? $lastJenis->id + 1 : 1; // Mulai dari 1 jika data kosong
+
+            // Menambahkan ID yang di-generate ke request
+            $data = $request->all();
+            $data['id'] = $newId; // Assign ID baru
+
+            // Simpan data jenis
+            Jenis::create($data);
+
             return response()->json(['status' => true, 'message' => 'Data jenis berhasil disimpan']);
         }
+
         return redirect('/');
     }
+
 
     public function show(string $id)
     {
