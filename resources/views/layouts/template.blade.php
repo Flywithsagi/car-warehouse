@@ -4,7 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name') }} - PM Laravel Starter Code</title>
+    <link rel="shortcut icon" href="{{ asset('adminlte/dist/img/AdminLTELogo.png') }}" type="image/x-icon">
+    <title>{{ config('app.name') }} | UTS - Car Warehouse</title>
 
     <!-- Untuk mengirimkan token Laravel CSRF pada setiap request AJAX -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
