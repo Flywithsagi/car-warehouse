@@ -109,8 +109,8 @@ class MobilController extends Controller
             $rules = [
                 'name' => 'required|string|min:3',
                 'brand' => 'required|string|min:3',
-                'year' => 'required|integer',
-                'quantity' => 'required|integer',
+                'year' => 'required|integer|min:1900',
+                'quantity' => 'required|integer|min:1',
                 'jenis_id' => 'required|exists:jenis,id',
             ];
 

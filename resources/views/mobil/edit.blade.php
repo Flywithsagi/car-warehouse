@@ -40,12 +40,14 @@
                     </div>
                     <div class="form-group">
                         <label>Tahun</label>
-                        <input type="number" name="year" class="form-control" value="{{ $mobil->year }}" required>
+                        <input type="number" name="year" class="form-control" value="{{ $mobil->year }}" min="1900"
+                            required>
                         <small class="text-danger error-text" id="error-year"></small>
                     </div>
                     <div class="form-group">
                         <label>Jumlah</label>
-                        <input type="number" name="quantity" class="form-control" value="{{ $mobil->quantity }}" required>
+                        <input type="number" name="quantity" class="form-control" value="{{ $mobil->quantity }}" min="1"
+                            required>
                         <small class="text-danger error-text" id="error-quantity"></small>
                     </div>
                     <div class="form-group">
