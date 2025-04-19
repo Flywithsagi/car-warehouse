@@ -6,7 +6,7 @@
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
                 <!-- Tombol Tambah -->
-                <button onclick="modalAction('{{ url('jenis/create') }}')" class="btn btn-sm btn-success mt-1">
+                <button onclick="modalAction('{{ url('mobil/create') }}')" class="btn btn-sm btn-success mt-1">
                     Tambah
                 </button>
             </div>
@@ -20,12 +20,15 @@
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
 
-            <table class="table table-bordered table-striped table-hover table-sm" id="table_jenis">
+            <table class="table table-bordered table-striped table-hover table-sm" id="table_mobil">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Nama Jenis</th>
-                        <th>Tipe Jenis</th>
+                        <th>Nama Mobil</th>
+                        <th>Merk Mobil</th>
+                        <th>Tahun Mobil</th>
+                        <th>Jumlah</th>
+                        <th>Jenis Kendaraan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -48,12 +51,12 @@
                 $('#myModal').modal('show');
             });
         }
-        var dataJenis;
+        var dataMobil;
         $(document).ready(function () {
-            dataJenis = $('#table_jenis').DataTable({
+            dataMobil = $('#table_mobil').DataTable({
                 serverSide: true,
                 ajax: {
-                    url: "{{ url('jenis/list') }}",
+                    url: "{{ url('mobil/list') }}",
                     dataType: "json",
                     type: "POST"
                 },
@@ -65,13 +68,31 @@
                         searchable: true
                     },
                     {
-                        data: "name", // Kolom nama jenis
+                        data: "name", // Kolom nama mobil
                         className: "",
                         orderable: true,
                         searchable: true
                     },
                     {
-                        data: "type", // Kolom tipe jenis
+                        data: "brand", // Kolom merk mobil
+                        className: "",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "year", // Kolom tahun mobil
+                        className: "",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "quantity", // Kolom jumlah mobil
+                        className: "",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "jenis_id", // Kolom jenis kendaraan
                         className: "",
                         orderable: true,
                         searchable: true

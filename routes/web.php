@@ -21,7 +21,7 @@ Route::prefix('jenis')->group(function () {
     Route::delete('/{id}/delete', [JenisController::class, 'delete']);
 });
 
-// Route Halaman Mobil
+// Route Halaman data Mobil
 Route::prefix('mobil')->group(function () {
     Route::get('/', [MobilController::class, 'index']);
     Route::post('/list', [MobilController::class, 'list']);
