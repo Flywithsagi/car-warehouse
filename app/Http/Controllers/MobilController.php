@@ -72,6 +72,7 @@ class MobilController extends Controller
     }
 
     // Menyimpan data mobil baru ke database
+    // Menyimpan data mobil baru ke database
     public function store(Request $request)
     {
         // Cek apakah request berasal dari AJAX
@@ -96,35 +97,53 @@ class MobilController extends Controller
                 ]);
             }
 
-            // Ambil ID terakhir dari tabel mobil
-            $lastId = Mobil::max('id') ?? 0;
-            $newId = $lastId + 1;
+            // Cek apakah mobil dengan nama, merek, dan tahun yang sama sudah ada
+            $existingMobil = Mobil::where('name', $request->name)
+                ->where('brand', $request->brand)
+                ->where('year', $request->year)
+                ->first();
 
-            // Auto generate kode mobil (contoh: MB0001)
-            $lastMobil = Mobil::orderBy('id', 'desc')->first();
-            $newCode = 'MB' . str_pad(
-                ($lastMobil ? (intval(substr($lastMobil->kode_mobil, 2)) + 1) : 1),
-                4,
-                '0',
-                STR_PAD_LEFT
-            );
+            if ($existingMobil) {
+                // Jika sudah ada, tambahkan quantity-nya
+                $existingMobil->quantity += $request->quantity;
+                $existingMobil->save();
 
-            // Simpan data mobil ke database
-            $mobil = new Mobil();
-            $mobil->id = $newId;
-            $mobil->kode_mobil = $newCode;
-            $mobil->name = $request->name;
-            $mobil->brand = $request->brand;
-            $mobil->year = $request->year;
-            $mobil->quantity = $request->quantity;
-            $mobil->jenis_id = $request->jenis_id;
-            $mobil->save();
+                // Response sukses
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data mobil berhasil diperbarui (quantity ditambahkan)'
+                ]);
+            } else {
+                // Ambil ID terakhir dari tabel mobil
+                $lastId = Mobil::max('id') ?? 0;
+                $newId = $lastId + 1;
 
-            // Response sukses
-            return response()->json([
-                'status' => true,
-                'message' => 'Data mobil berhasil disimpan'
-            ]);
+                // Auto generate kode mobil (contoh: MB0001)
+                $lastMobil = Mobil::orderBy('id', 'desc')->first();
+                $newCode = 'MB' . str_pad(
+                    ($lastMobil ? (intval(substr($lastMobil->kode_mobil, 2)) + 1) : 1),
+                    4,
+                    '0',
+                    STR_PAD_LEFT
+                );
+
+                // Simpan data mobil baru ke database
+                $mobil = new Mobil();
+                $mobil->id = $newId;
+                $mobil->kode_mobil = $newCode;
+                $mobil->name = $request->name;
+                $mobil->brand = $request->brand;
+                $mobil->year = $request->year;
+                $mobil->quantity = $request->quantity;
+                $mobil->jenis_id = $request->jenis_id;
+                $mobil->save();
+
+                // Response sukses
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data mobil berhasil disimpan'
+                ]);
+            }
         }
 
         return redirect('/');
