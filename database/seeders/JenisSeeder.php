@@ -7,6 +7,11 @@ use App\Models\Jenis;
 
 class JenisSeeder extends Seeder
 {
+    // public function run(): void
+    // {
+    //     // Generate 10 data dummy menggunakan factory
+    //     Jenis::factory()->count(10)->create();
+    // }
     public function run(): void
     {
         $data = [

@@ -9,7 +9,7 @@ class ChangeIdColumnOnJenisTable extends Migration
     public function up()
     {
         Schema::table('jenis', function (Blueprint $table) {
-            // Mengubah kolom 'id' untuk tidak menggunakan auto-increment
+            // Ubah kolom 'id' jadi manual (tanpa auto-increment)
             $table->unsignedBigInteger('id')->primary()->change();
         });
     }
@@ -17,7 +17,7 @@ class ChangeIdColumnOnJenisTable extends Migration
     public function down()
     {
         Schema::table('jenis', function (Blueprint $table) {
-            // Mengembalikan kolom 'id' ke auto-increment
+            // Kembalikan kolom 'id' jadi auto-increment
             $table->bigIncrements('id')->primary()->change();
         });
     }
