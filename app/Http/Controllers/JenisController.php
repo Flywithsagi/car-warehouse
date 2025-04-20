@@ -53,47 +53,48 @@ class JenisController extends Controller
     public function store(Request $request)
     {
         if ($request->ajax() || $request->wantsJson()) {
-            // Aturan validasi untuk inputan
             $rules = [
                 'name' => 'required|string|min:3',
                 'type' => 'required|string|min:3'
             ];
 
-            // Melakukan validasi terhadap data yang masuk
             $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
-                // Jika validasi gagal, kirim response error
-                return response()->json(['status' => false, 'message' => 'Validasi Gagal', 'msgField' => $validator->errors()]);
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors()
+                ]);
             }
 
-            // Memeriksa apakah sudah ada jenis dengan nama dan tipe yang sama
-            $existingJenis = Jenis::where('name', $request->name)
-                ->where('type', $request->type)
-                ->first();
+            // Cek jika nama jenis sudah pernah ada (meskipun type berbeda)
+            $existingJenis = Jenis::where('name', $request->name)->first();
 
             if ($existingJenis) {
-                // Jika data jenis sudah ada, kirim response error
-                return response()->json(['status' => false, 'message' => 'Jenis dengan nama dan tipe yang sama sudah ada']);
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Jenis dengan nama tersebut sudah ada'
+                ]);
             }
 
-            // Ambil ID terakhir dari tabel jenis
             $lastJenis = Jenis::orderBy('id', 'desc')->first();
-            // Tentukan ID baru secara manual (karena tidak auto-increment)
             $newId = $lastJenis ? $lastJenis->id + 1 : 1;
 
-            // Tambahkan ID baru ke data yang dikirim
             $data = $request->all();
             $data['id'] = $newId;
 
-            // Simpan data ke tabel jenis
             Jenis::create($data);
 
-            return response()->json(['status' => true, 'message' => 'Data jenis berhasil disimpan']);
+            return response()->json([
+                'status' => true,
+                'message' => 'Data jenis berhasil disimpan'
+            ]);
         }
 
-        return redirect('/'); // Jika bukan AJAX, redirect ke halaman utama
+        return redirect('/');
     }
+
 
     // Menampilkan detail data jenis berdasarkan ID
     public function show(string $id)
